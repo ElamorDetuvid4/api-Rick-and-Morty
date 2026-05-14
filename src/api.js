@@ -1,7 +1,17 @@
-const API_BASE_URL = '/api';
+const API_BASE_URL = import.meta.env.DEV ? '/api' : 'https://rickandmortyapi.com/api';
 
 function buildNetworkErrorMessage() {
-  return 'No se pudo conectar con la API. Verifica tu internet y ejecuta el proyecto con npm run dev para activar el proxy local.';
+  return 'No se pudo conectar con la API. Verifica tu conexion e intenta nuevamente.';
+}
+
+async function parseApiResponse(response) {
+  const contentType = response.headers.get('content-type') || '';
+
+  if (!contentType.includes('application/json')) {
+    throw new Error('La API devolvio una respuesta inesperada. Intenta recargar la pagina.');
+  }
+
+  return response.json();
 }
 
 export async function getCharacters({ page = 1, species = '', name = '', signal } = {}) {
@@ -19,7 +29,7 @@ export async function getCharacters({ page = 1, species = '', name = '', signal 
     throw new Error(buildNetworkErrorMessage());
   }
 
-  const data = await response.json();
+  const data = await parseApiResponse(response);
 
   if (!response.ok) {
     if (response.status === 404) {
@@ -41,7 +51,7 @@ export async function getCharacterById(id) {
     throw new Error(buildNetworkErrorMessage());
   }
 
-  const data = await response.json();
+  const data = await parseApiResponse(response);
 
   if (!response.ok) {
     throw new Error(data?.error || 'No fue posible consultar el detalle del personaje.');
