@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.DEV ? '/api' : 'https://rickandmortyapi.com/api';
+const API_BASE_URL = '/api';
 
 function buildNetworkErrorMessage() {
   return 'No se pudo conectar con la API. Verifica tu conexion e intenta nuevamente.';
